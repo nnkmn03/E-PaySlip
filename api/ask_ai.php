@@ -23,7 +23,7 @@ if ($prompt === '') {
 }
 
 // 1. Get your Gemini API Key
-$apiKey = getenv('GEMINI_API_KEY') ?: 'YOUR_GEMINI_API_KEY';
+$apiKey = getenv('GEMINI_API_KEY') ?: 'AQ.Ab8RN6JbPESTVA2Ltx2AFIEeJFIHyiqAXHNH32l5XaXj8wI8Dw';
 
 if (empty($apiKey)) {
     http_response_code(500);

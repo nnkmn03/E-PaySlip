@@ -165,6 +165,23 @@
                 </div>
             </div>
 
+            <!-- ============ Deductions ============ -->
+            <div class="perforated-none">
+                <p class="section-label text-xs font-mono uppercase text-inksoft mb-2 border-t border-line pt-4">Earinings</p>
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-xs text-inksoft mb-1">Overtime</label>
+                        <input type="number" step="0.01" name="overtime" id="field_overtime"
+                               class="w-full border border-line rounded-lg px-3 py-2 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-brass/50">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-inksoft mb-1">Others</label>
+                        <input type="number" step="0.01" name="others" id="field_others"
+                               class="w-full border border-line rounded-lg px-3 py-2 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-brass/50">
+                    </div>
+                </div>
+            </div>
+
             <!-- ============ EPF / SOCSO toggle ============ -->
             <label class="flex items-center gap-2 bg-brasslt/30 border border-brasslt rounded-lg px-4 py-3 cursor-pointer">
                 <input type="checkbox" id="field_epf_socso_enabled" checked
@@ -176,7 +193,7 @@
             <!-- ============ Deductions ============ -->
             <div class="perforated-none">
                 <p class="section-label text-xs font-mono uppercase text-inksoft mb-2 border-t border-line pt-4">Deductions</p>
-                <div class="grid grid-cols-3 gap-3">
+                <div class="grid grid-cols-4 gap-4">
                     <div>
                         <label class="block text-xs text-inksoft mb-1">EPF (11%)</label>
                         <input type="text" id="field_epf_employee" readonly
@@ -189,8 +206,13 @@
                                class="w-full border border-line rounded-lg px-3 py-2 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-brass/50">
                     </div>
                     <div>
-                        <label class="block text-xs text-inksoft mb-1">SOCSO Lindung 24 Jam</label>
+                        <label class="block text-xs text-inksoft mb-1">SOCSO Lindung 24H</label>
                         <input type="number" step="0.01" name="socso24_employee" id="field_socso24_employee"
+                               class="w-full border border-line rounded-lg px-3 py-2 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-brass/50">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-inksoft mb-1">HPCS Staff Loan</label>
+                        <input type="number" step="0.01" name="staff_loan" id="field_staff_loan"
                                class="w-full border border-line rounded-lg px-3 py-2 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-brass/50">
                     </div>
                 </div>
@@ -219,9 +241,13 @@
                 </div>
             </div>
 
-            <button type="submit"
+            <button type="submit" name="format" value="xlsx"
                     class="w-full mt-2 bg-ink hover:bg-ink/90 text-white font-semibold py-3 rounded-lg">
                 📄 Generate Excel Payslip
+            </button>
+            <button type="submit" name="format" value="pdf"
+                    class="w-full mt-2 bg-rose-700 hover:bg-rose-800 text-white font-semibold py-3 rounded-lg">
+                📄 Generate PDF Payslip
             </button>
         </form>
     </div>
@@ -302,6 +328,9 @@ const els = {
     socso24Employee:   document.getElementById('field_socso24_employee'),
     socsoEmployer:     document.getElementById('field_socso_employer'),
     eisEmployer:       document.getElementById('field_eis_employer'),
+    staffLoan:         document.getElementById('field_staff_loan'),
+    overtime:          document.getElementById('field_overtime'),
+    others:            document.getElementById('field_others'),
 };
 
 // ---------------------------------------------------------------
@@ -324,7 +353,7 @@ function applyEnabledState() {
     const isEnabled = els.enabled.checked;
     els.enabledHidden.value = isEnabled ? '1' : '0';
 
-    [els.socsoEmployee, els.socso24Employee, els.socsoEmployer, els.eisEmployer].forEach(el => {
+    [els.socsoEmployee, els.socso24Employee, els.socsoEmployer, els.eisEmployer, els.staffLoan].forEach(el => {
         el.disabled = !isEnabled;
         if (!isEnabled) el.value = '0';
     });
@@ -385,6 +414,7 @@ document.getElementById('employeeSelect').addEventListener('change', async funct
     els.socso24Employee.value = '';
     els.socsoEmployer.value = '';
     els.eisEmployer.value = '';
+    els.staffLoan.value = '';
 
     applyEnabledState();
 });

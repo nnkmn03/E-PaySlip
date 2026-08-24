@@ -4,7 +4,7 @@ $pdo = require __DIR__ . '/../db.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
-    echo json_encode(['error' => 'Method not allowed']);
+    echo json_encode(['success' => false, 'error' => 'Method not allowed']);
     exit;
 }
 
@@ -17,17 +17,27 @@ $epfSocsoEnabled  = isset($_POST['epf_socso_enabled']) && $_POST['epf_socso_enab
 
 if ($name === '') {
     http_response_code(422);
-    echo json_encode(['error' => 'Employee name is required']);
+    echo json_encode(['success' => false, 'error' => 'Employee name is required']);
     exit;
 }
 
-$stmt = $pdo->prepare('
-    INSERT INTO employees (name, ic_number, position, bank_account, net_salary, epf_socso_enabled)
-    VALUES (?, ?, ?, ?, ?, ?)
-');
-$stmt->execute([$name, $icNumber, $position, $bankAccount, $netSalary, $epfSocsoEnabled]);
+try {
+    $stmt = $pdo->prepare('
+        INSERT INTO employees (name, ic_number, position, bank_account, net_salary, epf_socso_enabled)
+        VALUES (?, ?, ?, ?, ?, ?)
+        RETURNING id
+    ');
+    $stmt->execute([$name, $icNumber, $position, $bankAccount, $netSalary, $epfSocsoEnabled]);
+    $newId = $stmt->fetchColumn();
 
-echo json_encode([
-    'success' => true,
-    'id'      => $pdo->lastInsertId(),
-]);
+    echo json_encode([
+        'success' => true,
+        'id'      => $newId,
+    ]);
+} catch (Exception $e) {
+    http_response_code(500);
+    echo json_encode([
+        'success' => false,
+        'error'   => 'Insert failed: ' . $e->getMessage(),
+    ]);
+}

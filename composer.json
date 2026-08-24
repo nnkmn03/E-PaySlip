@@ -2,6 +2,7 @@
     "name": "internal/e-payslip",
     "description": "Local offline HR payslip generator (Laragon + SQLite + PhpSpreadsheet)",
     "require": {
-        "phpoffice/phpspreadsheet": "^1.29"
+        "phpoffice/phpspreadsheet": "^1.29",
+        "dompdf/dompdf": "^3.1"
     }
 }

@@ -2,64 +2,33 @@
 /**
  * db.php
  * ---------------------------------------------------------------
- * Central SQLite connection helper.
- * - Auto-creates /database/epayslip.sqlite on first run.
- * - Auto-creates the `employees` table if it doesn't exist yet.
- * - Auto-migrates older databases by adding any missing columns,
- *   so existing installs don't need to delete their .sqlite file.
- * - Every other script just does:  $pdo = require __DIR__ . '/db.php';
+ * Database Connection via Supabase IPv4 Pooler (Seoul Region)
  * ---------------------------------------------------------------
  */
 
-$dbDir  = __DIR__ . '/database';
-$dbPath = $dbDir . '/epayslip.sqlite';
+// Hostname for Northeast Asia (Seoul)
+$host     = getenv('DB_HOST')     ?: 'aws-0-ap-northeast-2.pooler.supabase.com';
+$port     = getenv('DB_PORT')     ?: '6543'; // 6543 (transaction mode) or 5432 (session mode)
+$dbname   = getenv('DB_NAME')     ?: 'postgres';
 
-if (!is_dir($dbDir)) {
-    mkdir($dbDir, 0777, true);
-}
+// Pooler username format: postgres.[PROJECT_REF]
+$user     = getenv('DB_USER')     ?: 'postgres.fekbudnrqmcdnbtuetki';
+$password = getenv('DB_PASSWORD') ?: 'Ayamgoyeng1@3';
 
-$isNewDatabase = !file_exists($dbPath);
+$dsn = "pgsql:host={$host};port={$port};dbname={$dbname};sslmode=require";
 
 try {
-    $pdo = new PDO('sqlite:' . $dbPath);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-    $pdo->exec('PRAGMA foreign_keys = ON');
+    $pdo = new PDO($dsn, $user, $password, [
+        PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+        PDO::ATTR_EMULATE_PREPARES   => false,
+    ]);
 } catch (PDOException $e) {
     http_response_code(500);
-    die('Database connection failed: ' . $e->getMessage());
-}
-
-if ($isNewDatabase) {
-    $pdo->exec("
-        CREATE TABLE IF NOT EXISTS employees (
-            id                  INTEGER PRIMARY KEY AUTOINCREMENT,
-            name                TEXT NOT NULL,
-            ic_number           TEXT,
-            position            TEXT,
-            bank_account        TEXT,
-            net_salary          REAL DEFAULT 0,
-            epf_socso_enabled   INTEGER NOT NULL DEFAULT 1,
-            created_at          TEXT DEFAULT CURRENT_TIMESTAMP
-        )
-    ");
-} else {
-    // Migration: add any columns that older installs don't have yet.
-    $existingColumns = array_column(
-        $pdo->query("PRAGMA table_info(employees)")->fetchAll(),
-        'name'
-    );
-
-    $requiredColumns = [
-        'position'          => "ALTER TABLE employees ADD COLUMN position TEXT",
-        'epf_socso_enabled' => "ALTER TABLE employees ADD COLUMN epf_socso_enabled INTEGER NOT NULL DEFAULT 1",
-    ];
-
-    foreach ($requiredColumns as $column => $alterSql) {
-        if (!in_array($column, $existingColumns, true)) {
-            $pdo->exec($alterSql);
-        }
-    }
+    die(json_encode([
+        'success' => false,
+        'error'   => 'Database connection failed: ' . $e->getMessage()
+    ]));
 }
 
 return $pdo;
