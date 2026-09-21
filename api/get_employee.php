@@ -1,23 +1,37 @@
 <?php
+// api/get_employee.php
 header('Content-Type: application/json');
-$pdo = require __DIR__ . '/../db.php';
+require_once __DIR__ . '/../db.php';
 
-$id = isset($_GET['id']) ? (int) $_GET['id'] : 0;
+$id = $_GET['id'] ?? null;
+$nric = $_GET['nric'] ?? null;
+$month = $_GET['month'] ?? null;
 
-if ($id <= 0) {
+if (!$id && (!$nric || !$month)) {
     http_response_code(400);
-    echo json_encode(['error' => 'Invalid employee id']);
+    echo json_encode(["status" => "error", "message" => "Missing identifier (id or nric + month)."]);
     exit;
 }
 
-$stmt = $pdo->prepare('SELECT * FROM employees WHERE id = ?');
-$stmt->execute([$id]);
-$employee = $stmt->fetch();
+try {
+    if ($id) {
+        $stmt = $pdo->prepare("SELECT * FROM payslips WHERE id = :id LIMIT 1");
+        $stmt->execute([':id' => $id]);
+    } else {
+        $stmt = $pdo->prepare("SELECT * FROM payslips WHERE nric = :nric AND salary_month = :month LIMIT 1");
+        $stmt->execute([':nric' => $nric, ':month' => $month]);
+    }
 
-if (!$employee) {
-    http_response_code(404);
-    echo json_encode(['error' => 'Employee not found']);
-    exit;
+    $employee = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if (!$employee) {
+        http_response_code(404);
+        echo json_encode(["status" => "error", "message" => "Payslip record not found."]);
+        exit;
+    }
+
+    echo json_encode($employee);
+} catch (PDOException $e) {
+    http_response_code(500);
+    echo json_encode(["status" => "error", "message" => $e->getMessage()]);
 }
-
-echo json_encode($employee);

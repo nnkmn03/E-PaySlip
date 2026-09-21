@@ -7,7 +7,7 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}">
+<link rel="icon" type="image/png" href="static/favicon.png">
 <script>
   tailwind.config = {
     theme: {
@@ -53,7 +53,6 @@
 
 <div class="max-w-2xl mx-auto px-4 py-10 sm:py-14">
 
-    <!-- Breadcrumb / back -->
     <a href="index.php" class="inline-flex items-center gap-1 text-sm text-inksoft hover:text-ink mb-6">
         ← Back to desk selection
     </a>
@@ -61,114 +60,88 @@
     <!-- Header -->
     <div class="mb-8">
         <div class="tab bg-ink text-paper text-xs font-mono tracking-widest uppercase px-4 py-2 w-fit -mb-1 relative z-10">
-            Form 001
+            Desk 002
         </div>
         <div class="bg-white border border-line rounded-b-xl rounded-tr-xl shadow-sm px-6 py-5">
             <h1 class="font-display text-2xl font-semibold text-ink">Payslip Desk</h1>
-            <p class="text-sm text-inksoft mt-1">Select staff, confirm details, generate the Excel payslip.</p>
+            <p class="text-sm text-inksoft mt-1">Select month and staff to review details or generate the payslip.</p>
         </div>
     </div>
 
     <div class="bg-white shadow-sm rounded-xl border border-line p-6">
 
-        <!-- Employee selector row -->
-        <div class="flex flex-col sm:flex-row gap-2 mb-6">
-            <select id="employeeSelect"
-                    class="flex-1 border border-line rounded-lg px-3 py-2 text-ink bg-white focus:outline-none focus:ring-2 focus:ring-brass/50">
-                <option value="">-- Select Employee --</option>
-            </select>
+        <!-- Month & Employee Selectors -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6 bg-slate-50 border border-line p-3.5 rounded-xl">
+            <div>
+                <label class="block text-xs font-semibold text-ink uppercase tracking-wider mb-1">1. Salary Month</label>
+                <select id="monthSelect"
+                        class="w-full border border-line rounded-lg px-3 py-2 text-ink bg-white font-medium text-sm focus:outline-none focus:ring-2 focus:ring-brass/50">
+                    <option value="">-- Select Payroll Month --</option>
+                </select>
+            </div>
 
-            <button id="btnAddStaff" type="button"
-                    class="px-4 py-2 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white text-sm font-medium whitespace-nowrap">
-                ➕ Add New Staff
-            </button>
-
-            <button id="btnDeleteStaff" type="button"
-                    class="px-4 py-2 rounded-lg bg-rose-700 hover:bg-rose-800 text-white text-sm font-medium whitespace-nowrap">
-                🗑️ Delete Staff
-            </button>
+            <div>
+                <label class="block text-xs font-semibold text-ink uppercase tracking-wider mb-1">2. Employee</label>
+                <select id="employeeSelect" disabled
+                        class="w-full border border-line rounded-lg px-3 py-2 text-ink bg-white font-medium text-sm focus:outline-none focus:ring-2 focus:ring-brass/50 disabled:opacity-50">
+                    <option value="">-- Choose Month First --</option>
+                </select>
+            </div>
         </div>
 
-        <!-- Payslip form -->
+        <!-- Payslip Form -->
         <form id="payslipForm" action="generate.php" method="POST" class="space-y-6">
+            <input type="hidden" name="payslip_id" id="field_payslip_id">
 
-            <!-- ============ Profile fields ============ -->
             <div class="space-y-4">
                 <div>
                     <label class="block text-sm font-medium text-inksoft mb-1">Employee Name</label>
-                    <input type="text" name="name" id="field_name"
+                    <input type="text" name="name" id="field_name" required
                            class="w-full border border-line rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brass/50">
                 </div>
 
-                <div>
-                    <label class="block text-sm font-medium text-inksoft mb-1">IC Number</label>
-                    <input type="text" name="ic_number" id="field_ic_number"
-                           class="w-full border border-line rounded-lg px-3 py-2 font-mono focus:outline-none focus:ring-2 focus:ring-brass/50">
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-inksoft mb-1">Position</label>
-                    <input type="text" name="position" id="field_position"
-                           class="w-full border border-line rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brass/50">
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-inksoft mb-1">Bank Account Number</label>
-                    <input type="text" name="bank_account" id="field_bank_account"
-                           class="w-full border border-line rounded-lg px-3 py-2 font-mono focus:outline-none focus:ring-2 focus:ring-brass/50">
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-inksoft mb-1">Net Salary (RM) <span class="text-inksoft/60 font-normal">— Basic Salary</span></label>
-                    <input type="number" step="0.01" name="net_salary" id="field_net_salary"
-                           class="w-full border border-line rounded-lg px-3 py-2 font-mono focus:outline-none focus:ring-2 focus:ring-brass/50">
-                </div>
-
-                <div class="grid grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-sm font-medium text-inksoft mb-1">Month</label>
-                        <select name="month" id="field_month"
-                                class="w-full border border-line rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-brass/50">
-                            <?php
-                            $months = [
-                                1 => 'January', 2 => 'February', 3 => 'March', 4 => 'April',
-                                5 => 'May', 6 => 'June', 7 => 'July', 8 => 'August',
-                                9 => 'September', 10 => 'October', 11 => 'November', 12 => 'December',
-                            ];
-                            $currentMonth = (int) date('n');
-                            foreach ($months as $num => $label) {
-                                $selected = $num === $currentMonth ? 'selected' : '';
-                                echo "<option value=\"{$num}\" {$selected}>{$label}</option>";
-                            }
-                            ?>
-                        </select>
+                        <label class="block text-sm font-medium text-inksoft mb-1">IC Number (NRIC)</label>
+                        <input type="text" name="ic_number" id="field_ic_number" required
+                               class="w-full border border-line rounded-lg px-3 py-2 font-mono focus:outline-none focus:ring-2 focus:ring-brass/50">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-inksoft mb-1">Year</label>
-                        <select name="year" id="field_year"
-                                class="w-full border border-line rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-brass/50">
-                            <?php
-                            $currentYear = (int) date('Y');
-                            for ($y = $currentYear - 5; $y <= $currentYear + 5; $y++) {
-                                $selected = $y === $currentYear ? 'selected' : '';
-                                echo "<option value=\"{$y}\" {$selected}>{$y}</option>";
-                            }
-                            ?>
-                        </select>
+                        <label class="block text-sm font-medium text-inksoft mb-1">Position</label>
+                        <input type="text" name="position" id="field_position"
+                               class="w-full border border-line rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brass/50">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-inksoft mb-1">Bank Account Number</label>
+                        <input type="text" name="bank_account" id="field_bank_account"
+                               class="w-full border border-line rounded-lg px-3 py-2 font-mono focus:outline-none focus:ring-2 focus:ring-brass/50">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-inksoft mb-1">Disbursement Date</label>
+                        <input type="date" name="payment_date" id="field_payment_date"
+                               class="w-full border border-line rounded-lg px-3 py-2 font-mono focus:outline-none focus:ring-2 focus:ring-brass/50">
                     </div>
                 </div>
 
                 <div>
-                    <label class="block text-sm font-medium text-inksoft mb-1">Payment Date</label>
-                    <input type="date" name="payment_date" id="field_payment_date"
-                           class="w-full border border-line rounded-lg px-3 py-2 font-mono focus:outline-none focus:ring-2 focus:ring-brass/50">
+                    <label class="block text-sm font-medium text-inksoft mb-1">Payroll Month</label>
+                    <input type="text" name="salary_month" id="field_salary_month" readonly
+                           class="w-full border border-line rounded-lg px-3 py-2 font-mono">
                 </div>
             </div>
 
-            <!-- ============ Deductions ============ -->
-            <div class="perforated-none">
-                <p class="section-label text-xs font-mono uppercase text-inksoft mb-2 border-t border-line pt-4">Earinings</p>
-                <div class="grid grid-cols-2 gap-2">
+            <!-- Earnings -->
+            <div>
+                <p class="section-label text-xs font-mono uppercase text-inksoft mb-2 border-t border-line pt-4">Earnings (RM)</p>
+                <div class="grid grid-cols-3 gap-3">
+                    <div>
+                        <label class="block text-xs text-inksoft mb-1">Basic Salary</label>
+                        <input type="number" step="0.01" name="basic_salary" id="field_basic_salary"
+                               class="w-full border border-line rounded-lg px-3 py-2 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-brass/50">
+                    </div>
                     <div>
                         <label class="block text-xs text-inksoft mb-1">Overtime</label>
                         <input type="number" step="0.01" name="overtime" id="field_overtime"
@@ -182,23 +155,14 @@
                 </div>
             </div>
 
-            <!-- ============ EPF / SOCSO toggle ============ -->
-            <label class="flex items-center gap-2 bg-brasslt/30 border border-brasslt rounded-lg px-4 py-3 cursor-pointer">
-                <input type="checkbox" id="field_epf_socso_enabled" checked
-                       class="w-4 h-4 accent-brass">
-                <span class="text-sm text-ink">Deduct EPF / SOCSO for this payslip</span>
-                <input type="hidden" name="epf_socso_enabled" id="field_epf_socso_enabled_hidden" value="1">
-            </label>
-
-            <!-- ============ Deductions ============ -->
-            <div class="perforated-none">
-                <p class="section-label text-xs font-mono uppercase text-inksoft mb-2 border-t border-line pt-4">Deductions</p>
-                <div class="grid grid-cols-4 gap-4">
+            <!-- Deductions -->
+            <div>
+                <p class="section-label text-xs font-mono uppercase text-inksoft mb-2 border-t border-line pt-4">Deductions (RM)</p>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
                     <div>
-                        <label class="block text-xs text-inksoft mb-1">EPF (11%)</label>
-                        <input type="text" id="field_epf_employee" readonly
+                        <label class="block text-xs text-inksoft mb-1">EPF (Employee)</label>
+                        <input type="number" step="0.01" name="epf_employee" id="field_epf_employee"
                                class="w-full border border-line rounded-lg px-3 py-2 font-mono text-sm">
-                        <input type="hidden" name="epf_employee" id="field_epf_employee_hidden" value="0">
                     </div>
                     <div>
                         <label class="block text-xs text-inksoft mb-1">SOCSO</label>
@@ -206,7 +170,7 @@
                                class="w-full border border-line rounded-lg px-3 py-2 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-brass/50">
                     </div>
                     <div>
-                        <label class="block text-xs text-inksoft mb-1">SOCSO Lindung 24H</label>
+                        <label class="block text-xs text-inksoft mb-1">SOCSO 24 Jam</label>
                         <input type="number" step="0.01" name="socso24_employee" id="field_socso24_employee"
                                class="w-full border border-line rounded-lg px-3 py-2 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-brass/50">
                     </div>
@@ -218,315 +182,134 @@
                 </div>
             </div>
 
-            <!-- ============ Employer's Contribution ============ -->
+            <!-- Employer Contributions -->
             <div>
-                <p class="section-label text-xs font-mono uppercase text-inksoft mb-2 border-t border-line pt-4">Employer's Contribution</p>
+                <p class="section-label text-xs font-mono uppercase text-inksoft mb-2 border-t border-line pt-4">Employer's Contribution (RM)</p>
                 <div class="grid grid-cols-3 gap-3">
                     <div>
-                        <label class="block text-xs text-inksoft mb-1">EPF (13%)</label>
-                        <input type="text" id="field_epf_employer" readonly
+                        <label class="block text-xs text-inksoft mb-1">Employer EPF</label>
+                        <input type="number" step="0.01" name="employer_epf" id="field_employer_epf"
                                class="w-full border border-line rounded-lg px-3 py-2 font-mono text-sm">
-                        <input type="hidden" name="epf_employer" id="field_epf_employer_hidden" value="0">
                     </div>
                     <div>
-                        <label class="block text-xs text-inksoft mb-1">SOCSO</label>
-                        <input type="number" step="0.01" name="socso_employer" id="field_socso_employer"
+                        <label class="block text-xs text-inksoft mb-1">Employer SOCSO</label>
+                        <input type="number" step="0.01" name="employer_socso" id="field_employer_socso"
                                class="w-full border border-line rounded-lg px-3 py-2 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-brass/50">
                     </div>
                     <div>
-                        <label class="block text-xs text-inksoft mb-1">EIS</label>
-                        <input type="number" step="0.01" name="eis_employer" id="field_eis_employer"
+                        <label class="block text-xs text-inksoft mb-1">Employer EIS</label>
+                        <input type="number" step="0.01" name="employer_eis" id="field_employer_eis"
                                class="w-full border border-line rounded-lg px-3 py-2 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-brass/50">
                     </div>
                 </div>
             </div>
 
-            <button type="submit" name="format" value="xlsx"
-                    class="w-full mt-2 bg-ink hover:bg-ink/90 text-white font-semibold py-3 rounded-lg">
-                📄 Generate Excel Payslip
-            </button>
-            <button type="submit" name="format" value="pdf"
-                    class="w-full mt-2 bg-rose-700 hover:bg-rose-800 text-white font-semibold py-3 rounded-lg">
-                📄 Generate PDF Payslip
-            </button>
+            <div class="pt-4 border-t border-line flex flex-col sm:flex-row gap-3">
+                <button type="submit" name="format" value="xlsx"
+                        class="flex-1 bg-ink hover:bg-ink/90 text-white font-semibold py-3 rounded-lg flex items-center justify-center gap-2">
+                    📄 Generate Excel Payslip
+                </button>
+                <button type="submit" name="format" value="pdf"
+                        class="flex-1 bg-rose-700 hover:bg-rose-800 text-white font-semibold py-3 rounded-lg flex items-center justify-center gap-2">
+                    📄 Generate PDF Payslip
+                </button>
+            </div>
         </form>
     </div>
 </div>
 
-<!-- ============ Add Staff Modal ============ -->
-<div id="addStaffModal" class="hidden fixed inset-0 bg-ink/50 flex items-center justify-center p-4 z-50">
-    <div class="bg-white rounded-xl shadow-lg w-full max-w-md p-6">
-        <h2 class="font-display text-lg font-semibold text-ink mb-4">➕ Add New Staff</h2>
-
-        <div class="space-y-3">
-            <input type="text" id="new_name" placeholder="Employee Name"
-                   class="w-full border border-line rounded-lg px-3 py-2">
-            <input type="text" id="new_ic_number" placeholder="IC Number"
-                   class="w-full border border-line rounded-lg px-3 py-2 font-mono">
-            <input type="text" id="new_position" placeholder="Position"
-                   class="w-full border border-line rounded-lg px-3 py-2">
-            <input type="text" id="new_bank_account" placeholder="Bank Account Number"
-                   class="w-full border border-line rounded-lg px-3 py-2 font-mono">
-            <input type="number" step="0.01" id="new_net_salary" placeholder="Net Salary"
-                   class="w-full border border-line rounded-lg px-3 py-2 font-mono">
-
-            <label class="flex items-center gap-2 bg-brasslt/30 border border-brasslt rounded-lg px-3 py-2 cursor-pointer">
-                <input type="checkbox" id="new_epf_socso_enabled" checked class="w-4 h-4 accent-brass">
-                <span class="text-sm text-ink">Staff is subject to EPF / SOCSO deduction</span>
-            </label>
-        </div>
-
-        <p class="text-xs text-inksoft mt-2">
-            SOCSO / EIS amounts are entered fresh on each payslip, so they're not asked for here.
-        </p>
-
-        <p id="addStaffError" class="text-rose-600 text-sm mt-2 hidden"></p>
-
-        <div class="flex justify-end gap-2 mt-5">
-            <button type="button" onclick="closeModal('addStaffModal')"
-                    class="px-4 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-ink text-sm">Cancel</button>
-            <button type="button" id="btnSaveStaff"
-                    class="px-4 py-2 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white text-sm">Save Staff</button>
-        </div>
-    </div>
-</div>
-
-<!-- ============ Delete Staff Modal ============ -->
-<div id="deleteStaffModal" class="hidden fixed inset-0 bg-ink/50 flex items-center justify-center p-4 z-50">
-    <div class="bg-white rounded-xl shadow-lg w-full max-w-md p-6">
-        <h2 class="font-display text-lg font-semibold text-ink mb-4">🗑️ Delete Staff</h2>
-
-        <ul id="deleteStaffList" class="divide-y divide-line max-h-72 overflow-y-auto"></ul>
-
-        <div class="flex justify-end mt-5">
-            <button type="button" onclick="closeModal('deleteStaffModal')"
-                    class="px-4 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-ink text-sm">Close</button>
-        </div>
-    </div>
-</div>
-
 <script>
-// ---------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------
-function openModal(id) {
-    document.getElementById(id).classList.remove('hidden');
-}
-function closeModal(id) {
-    document.getElementById(id).classList.add('hidden');
-}
+const monthSelect = document.getElementById('monthSelect');
+const employeeSelect = document.getElementById('employeeSelect');
 
-const els = {
-    netSalary:        document.getElementById('field_net_salary'),
-    enabled:           document.getElementById('field_epf_socso_enabled'),
-    enabledHidden:      document.getElementById('field_epf_socso_enabled_hidden'),
-    epfEmployee:       document.getElementById('field_epf_employee'),
-    epfEmployeeHidden: document.getElementById('field_epf_employee_hidden'),
-    epfEmployer:       document.getElementById('field_epf_employer'),
-    epfEmployerHidden: document.getElementById('field_epf_employer_hidden'),
-    socsoEmployee:     document.getElementById('field_socso_employee'),
-    socso24Employee:   document.getElementById('field_socso24_employee'),
-    socsoEmployer:     document.getElementById('field_socso_employer'),
-    eisEmployer:       document.getElementById('field_eis_employer'),
-    staffLoan:         document.getElementById('field_staff_loan'),
-    overtime:          document.getElementById('field_overtime'),
-    others:            document.getElementById('field_others'),
-};
+async function loadMonths() {
+    try {
+        const res = await fetch('api/get_months.php');
+        const data = await res.json();
 
-// ---------------------------------------------------------------
-// EPF (11% / 13%) auto-calculation + enable/disable of manual fields
-// ---------------------------------------------------------------
-function recalcEPF() {
-    const isEnabled = els.enabled.checked;
-    const net = parseFloat(els.netSalary.value) || 0;
-
-    const epfEmployee = isEnabled ? (net * 0.11) : 0;
-    const epfEmployer = isEnabled ? (net * 0.13) : 0;
-
-    els.epfEmployee.value = epfEmployee.toFixed(2);
-    els.epfEmployeeHidden.value = epfEmployee.toFixed(2);
-    els.epfEmployer.value = epfEmployer.toFixed(2);
-    els.epfEmployerHidden.value = epfEmployer.toFixed(2);
+        monthSelect.innerHTML = '<option value="">-- Select Payroll Month --</option>';
+        if (data.status === 'success' && data.months && data.months.length > 0) {
+            data.months.forEach(m => {
+                const opt = document.createElement('option');
+                opt.value = m;
+                opt.textContent = m;
+                monthSelect.appendChild(opt);
+            });
+        } else {
+            monthSelect.innerHTML = '<option value="">No payroll uploaded yet</option>';
+        }
+    } catch (e) {
+        monthSelect.innerHTML = '<option value="">Failed to load months</option>';
+    }
 }
 
-function applyEnabledState() {
-    const isEnabled = els.enabled.checked;
-    els.enabledHidden.value = isEnabled ? '1' : '0';
+monthSelect.addEventListener('change', async function () {
+    const selectedMonth = this.value;
+    employeeSelect.innerHTML = '<option value="">Loading staff...</option>';
+    employeeSelect.disabled = true;
 
-    [els.socsoEmployee, els.socso24Employee, els.socsoEmployer, els.eisEmployer, els.staffLoan].forEach(el => {
-        el.disabled = !isEnabled;
-        if (!isEnabled) el.value = '0';
-    });
+    if (!selectedMonth) {
+        employeeSelect.innerHTML = '<option value="">-- Choose Month First --</option>';
+        return;
+    }
 
-    recalcEPF();
-}
+    try {
+        const res = await fetch(`api/get_employees.php?month=${encodeURIComponent(selectedMonth)}`);
+        const employees = await res.json();
 
-els.netSalary.addEventListener('input', recalcEPF);
-els.enabled.addEventListener('change', applyEnabledState);
+        employeeSelect.innerHTML = '<option value="">-- Select Employee --</option>';
+        if (employees.length > 0) {
+            employees.forEach(emp => {
+                const opt = document.createElement('option');
+                opt.value = emp.id;
+                opt.textContent = `${emp.employee_name} (${emp.nric})`;
+                employeeSelect.appendChild(opt);
+            });
+            employeeSelect.disabled = false;
+        } else {
+            employeeSelect.innerHTML = '<option value="">No records for this month</option>';
+        }
+    } catch (e) {
+        employeeSelect.innerHTML = '<option value="">Error loading employees</option>';
+    }
+});
 
-// ---------------------------------------------------------------
-// Load employee dropdown
-// ---------------------------------------------------------------
-async function loadEmployeeDropdown(selectedId = '') {
-    const res = await fetch('api/get_employees.php');
-    const employees = await res.json();
-
-    const select = document.getElementById('employeeSelect');
-    select.innerHTML = '<option value="">-- Select Employee --</option>';
-
-    employees.forEach(emp => {
-        const opt = document.createElement('option');
-        opt.value = emp.id;
-        opt.textContent = emp.name;
-        if (String(emp.id) === String(selectedId)) opt.selected = true;
-        select.appendChild(opt);
-    });
-}
-
-// ---------------------------------------------------------------
-// Autofill form when an employee is selected
-//
-// Sticky (left alone):    Month, Year, Payment Date
-// From employee profile:  Name, IC, Position, Bank, Net Salary,
-//                          EPF/SOCSO toggle
-// Fresh every time:       SOCSO, SOCSO 24hr, Employer SOCSO, Employer EIS
-// ---------------------------------------------------------------
-document.getElementById('employeeSelect').addEventListener('change', async function () {
+employeeSelect.addEventListener('change', async function () {
     const id = this.value;
     if (!id) return;
 
-    const res = await fetch(`api/get_employee.php?id=${id}`);
-    if (!res.ok) return;
+    try {
+        const res = await fetch(`api/get_employee.php?id=${id}`);
+        if (!res.ok) return;
 
-    const emp = await res.json();
+        const p = await res.json();
 
-    document.getElementById('field_name').value = emp.name ?? '';
-    document.getElementById('field_ic_number').value = emp.ic_number ?? '';
-    document.getElementById('field_position').value = emp.position ?? '';
-    document.getElementById('field_bank_account').value = emp.bank_account ?? '';
-    els.netSalary.value = emp.net_salary ?? '';
-    // field_month / field_year / field_payment_date deliberately NOT touched (sticky)
+        document.getElementById('field_payslip_id').value = p.id ?? '';
+        document.getElementById('field_name').value = p.employee_name ?? '';
+        document.getElementById('field_ic_number').value = p.nric ?? '';
+        document.getElementById('field_position').value = p.position ?? '';
+        document.getElementById('field_bank_account').value = p.bank_account_no ?? '';
+        document.getElementById('field_salary_month').value = p.salary_month ?? '';
+        document.getElementById('field_payment_date').value = p.payment_date ?? '';
 
-    els.enabled.checked = String(emp.epf_socso_enabled) !== '0';
+        document.getElementById('field_basic_salary').value = parseFloat(p.basic_salary || 0).toFixed(2);
+        document.getElementById('field_overtime').value = parseFloat(p.overtime || 0).toFixed(2);
+        document.getElementById('field_others').value = parseFloat(p.others || 0).toFixed(2);
 
-    // Manual entries reset fresh for every payslip run
-    els.socsoEmployee.value = '';
-    els.socso24Employee.value = '';
-    els.socsoEmployer.value = '';
-    els.eisEmployer.value = '';
-    els.staffLoan.value = '';
+        document.getElementById('field_epf_employee').value = parseFloat(p.deduction_epf || 0).toFixed(2);
+        document.getElementById('field_socso_employee').value = parseFloat(p.deduction_socso || 0).toFixed(2);
+        document.getElementById('field_socso24_employee').value = parseFloat(p.deduction_socso_lindung_24jam || 0).toFixed(2);
+        document.getElementById('field_staff_loan').value = parseFloat(p.hpcs_staff_loan || 0).toFixed(2);
 
-    applyEnabledState();
-});
-
-// ---------------------------------------------------------------
-// Add Staff modal
-// ---------------------------------------------------------------
-document.getElementById('btnAddStaff').addEventListener('click', () => {
-    document.getElementById('new_name').value = '';
-    document.getElementById('new_ic_number').value = '';
-    document.getElementById('new_position').value = '';
-    document.getElementById('new_bank_account').value = '';
-    document.getElementById('new_net_salary').value = '';
-    document.getElementById('new_epf_socso_enabled').checked = true;
-    document.getElementById('addStaffError').classList.add('hidden');
-    openModal('addStaffModal');
-});
-
-document.getElementById('btnSaveStaff').addEventListener('click', async () => {
-    const name = document.getElementById('new_name').value.trim();
-    const errorEl = document.getElementById('addStaffError');
-
-    if (!name) {
-        errorEl.textContent = 'Employee name is required.';
-        errorEl.classList.remove('hidden');
-        return;
-    }
-
-    const formData = new FormData();
-    formData.append('name', name);
-    formData.append('ic_number', document.getElementById('new_ic_number').value.trim());
-    formData.append('position', document.getElementById('new_position').value.trim());
-    formData.append('bank_account', document.getElementById('new_bank_account').value.trim());
-    formData.append('net_salary', document.getElementById('new_net_salary').value || 0);
-    formData.append('epf_socso_enabled', document.getElementById('new_epf_socso_enabled').checked ? '1' : '0');
-
-    const res = await fetch('api/add_employee.php', { method: 'POST', body: formData });
-    const data = await res.json();
-
-    if (data.success) {
-        closeModal('addStaffModal');
-        await loadEmployeeDropdown(data.id);
-        document.getElementById('employeeSelect').dispatchEvent(new Event('change'));
-    } else {
-        errorEl.textContent = data.error || 'Something went wrong.';
-        errorEl.classList.remove('hidden');
+        document.getElementById('field_employer_epf').value = parseFloat(p.employer_epf || 0).toFixed(2);
+        document.getElementById('field_employer_socso').value = parseFloat(p.employer_socso || 0).toFixed(2);
+        document.getElementById('field_employer_eis').value = parseFloat(p.employer_eis || 0).toFixed(2);
+    } catch (e) {
+        alert('Could not fetch employee details.');
     }
 });
 
-// ---------------------------------------------------------------
-// Delete Staff modal
-// ---------------------------------------------------------------
-document.getElementById('btnDeleteStaff').addEventListener('click', async () => {
-    const res = await fetch('api/get_employees.php');
-    const employees = await res.json();
-
-    const list = document.getElementById('deleteStaffList');
-    list.innerHTML = '';
-
-    if (employees.length === 0) {
-        list.innerHTML = '<li class="py-3 text-sm text-inksoft">No staff records yet.</li>';
-    }
-
-    employees.forEach(emp => {
-        const li = document.createElement('li');
-        li.className = 'flex items-center justify-between py-2';
-        li.innerHTML = `
-            <span class="text-sm text-ink">${emp.name}</span>
-            <button class="px-3 py-1 text-xs rounded-md bg-rose-700 hover:bg-rose-800 text-white"
-                    data-id="${emp.id}" data-name="${emp.name}">Delete</button>
-        `;
-        list.appendChild(li);
-    });
-
-    openModal('deleteStaffModal');
-});
-
-document.getElementById('deleteStaffList').addEventListener('click', async (e) => {
-    const btn = e.target.closest('button[data-id]');
-    if (!btn) return;
-
-    const id = btn.dataset.id;
-    const name = btn.dataset.name;
-
-    if (!confirm(`Are you sure you want to delete "${name}"? This cannot be undone.`)) {
-        return;
-    }
-
-    const formData = new FormData();
-    formData.append('id', id);
-
-    const res = await fetch('api/delete_employee.php', { method: 'POST', body: formData });
-    const data = await res.json();
-
-    if (data.success) {
-        btn.closest('li').remove();
-        await loadEmployeeDropdown();
-
-        // If the deleted employee was currently loaded in the form, clear the form
-        if (document.getElementById('employeeSelect').value === id) {
-            document.getElementById('payslipForm').reset();
-        }
-    } else {
-        alert(data.error || 'Failed to delete employee.');
-    }
-});
-
-// ---------------------------------------------------------------
-// Init
-// ---------------------------------------------------------------
-applyEnabledState();
-loadEmployeeDropdown();
+loadMonths();
 </script>
 
 </body>

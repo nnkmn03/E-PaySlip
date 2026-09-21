@@ -4,26 +4,6 @@
  * ---------------------------------------------------------------
  * Loads template.xlsx, injects form data into fixed cells,
  * and delivers clean binary output for Excel (.xlsx) or PDF (.pdf).
- *
- * PDF output uses PHP's COM automation to drive the real, locally
- * installed Microsoft Excel (Excel.Application) to open the
- * generated file and export it to PDF itself -- the same thing you
- * do manually via File > Export > PDF. This means the PDF matches
- * Excel's own rendering exactly (correct column widths, wrapping,
- * page layout), instead of approximating it with a third-party
- * HTML/CSS renderer like Dompdf, which does not read Excel's layout
- * engine and mis-wraps text that fits fine in real Excel.
- *
- * REQUIREMENTS for the PDF button to work:
- *   1. This must run on Windows (Laragon), with Microsoft Excel
- *      actually installed on the same machine.
- *   2. The php_com_dotnet extension must be enabled in php.ini:
- *        extension=com_dotnet
- *      (Laragon: Menu > PHP > Extensions > com_dotnet, then restart)
- *   3. Laragon should run as your normal logged-in desktop session
- *      (not as a Windows service under a different account) -- Office
- *      apps are not designed to automate reliably from a
- *      non-interactive service session.
  * ---------------------------------------------------------------
  */
 
@@ -41,7 +21,6 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
 
 const TEMPLATE_PATH = __DIR__ . '/template.xlsx';
 const TEMPLATE_SHEET_NAME = null;
-const TEMP_DIR = __DIR__ . '/temp';
 
 const CELL_MAP = [
     'name'              => 'B4',   // Employee Name
@@ -63,7 +42,7 @@ const CELL_MAP = [
 ];
 
 const CELL_LABELS = [
-    'name'              => 'Employee Name    :',
+    'name'              => 'Employee Name    :', 
     'ic_number'         => 'NRIC             :',
     'position'          => 'Position         :',
     'salary_month'      => 'Salary Month    :',
@@ -156,11 +135,11 @@ if (!$sheet) {
 // Write values to cells
 foreach (CELL_MAP as $field => $cellRef) {
     $valueToWrite = $values[$field] ?? '';
-
+    
     if ($valueToWrite !== '' && isset(CELL_LABELS[$field])) {
         $valueToWrite = CELL_LABELS[$field] . ' ' . $valueToWrite;
     }
-
+    
     $sheet->setCellValue($cellRef, $valueToWrite);
 }
 
@@ -174,93 +153,32 @@ while (ob_get_level()) {
 }
 
 if ($format === 'pdf') {
-
-    // -------------------------------------------------------------
-    // PDF via real Excel (COM automation) -- see file header for
-    // the requirements this needs on the host machine.
-    // -------------------------------------------------------------
-
-    if (!class_exists('COM')) {
-        http_response_code(500);
-        die(
-            "PDF export needs the php_com_dotnet extension, which isn't enabled.\n" .
-            "In Laragon: Menu > PHP > Extensions > com_dotnet (tick it), then restart Laragon.\n" .
-            "This also only works on Windows with Microsoft Excel installed."
-        );
-    }
-
-    if (!is_dir(TEMP_DIR)) {
-        mkdir(TEMP_DIR, 0777, true);
-    }
-
-    $uniqueId    = uniqid('payslip_', true);
-    $tempXlsxAbs = TEMP_DIR . "/{$uniqueId}.xlsx";
-    $tempPdfAbs  = TEMP_DIR . "/{$uniqueId}.pdf";
-
-    // Excel's COM interface needs a real, absolute, Windows-style path
-    $tempXlsxWin = str_replace('/', '\\', $tempXlsxAbs);
-    $tempPdfWin  = str_replace('/', '\\', $tempPdfAbs);
-
-    // 1. Save the filled-in workbook to a temp file first
-    $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
-    $writer->save($tempXlsxAbs);
-
-    $excel = null;
-    $workbook = null;
-
-    try {
-        $excel = new COM('Excel.Application');
-        $excel->Visible = false;
-        $excel->DisplayAlerts = false;
-
-        $workbook = $excel->Workbooks->Open($tempXlsxWin);
-
-        // 0 = xlTypePDF
-        $workbook->ExportAsFixedFormat(0, $tempPdfWin);
-
-        $workbook->Close(false);
-        $excel->Quit();
-    } catch (\Throwable $e) {
-        // Best-effort cleanup of the Excel instance even if something failed
-        if ($workbook !== null) {
-            try { $workbook->Close(false); } catch (\Throwable $ignored) {}
-        }
-        if ($excel !== null) {
-            try { $excel->Quit(); } catch (\Throwable $ignored) {}
-        }
-        @unlink($tempXlsxAbs);
-
-        http_response_code(500);
-        die(
-            "Excel automation failed: " . $e->getMessage() . "\n\n" .
-            "Common causes: Excel isn't installed, Laragon is running as a " .
-            "Windows service (not your interactive desktop session), or a " .
-            "leftover EXCEL.EXE process is stuck -- check Task Manager."
-        );
-    } finally {
-        // Release COM objects so Excel actually exits
-        $workbook = null;
-        $excel = null;
-    }
-
-    if (!file_exists($tempPdfAbs)) {
-        @unlink($tempXlsxAbs);
-        http_response_code(500);
-        die('Excel did not produce a PDF file. Please try again.');
-    }
-
     $filename = "Payslip_{$safeName}_{$safeMonth}.pdf";
+
+    // Set Dompdf as the PDF renderer
+    IOFactory::registerWriter('Pdf', \PhpOffice\PhpSpreadsheet\Writer\Pdf\Dompdf::class);
+    
+    $sheet->setShowGridLines(false);
+    $sheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
+    $sheet->getPageSetup()->setPaperSize(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::PAPERSIZE_A4);
+
+    $sheet->getPageSetup()->setFitToPage(true);
+    $sheet->getPageSetup()->setFitToWidth(1);
+    $sheet->getPageSetup()->setFitToHeight(1);
+    $sheet->getPageSetup()->setHorizontalCentered(true);
+
+    $sheet->getPageMargins()->setTop(0.4);
+    $sheet->getPageMargins()->setBottom(0.4);
+    $sheet->getPageMargins()->setLeft(0.4);
+    $sheet->getPageMargins()->setRight(0.4);
 
     header('Content-Type: application/pdf');
     header('Content-Disposition: attachment; filename="' . $filename . '"');
-    header('Content-Length: ' . filesize($tempPdfAbs));
     header('Cache-Control: max-age=0');
     header('Pragma: public');
 
-    readfile($tempPdfAbs);
-
-    @unlink($tempXlsxAbs);
-    @unlink($tempPdfAbs);
+    $writer = IOFactory::createWriter($spreadsheet, 'Pdf');
+    $writer->save('php://output');
 } else {
     $filename = "Payslip_{$safeName}_{$safeMonth}.xlsx";
 

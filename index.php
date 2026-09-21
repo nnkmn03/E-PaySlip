@@ -7,7 +7,7 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}">
+<link rel="icon" type="image/png" href="static/favicon.png">
 <script>
   tailwind.config = {
     theme: {
@@ -47,47 +47,70 @@
 </head>
 <body class="min-h-screen font-body text-ink">
 
-<div class="max-w-4xl mx-auto px-4 py-14 sm:py-20">
+<div class="max-w-5xl mx-auto px-4 py-14 sm:py-20">
 
     <!-- Header -->
     <div class="text-center mb-14">
-        <p class="font-mono text-xs tracking-[0.3em] text-brass uppercase mb-3">HR Desk · Offline System</p>
+        <p class="font-mono text-xs tracking-[0.3em] text-brass uppercase mb-3">HR Desk · On-Premise System</p>
         <h1 class="font-display text-4xl sm:text-5xl font-semibold text-ink">E-PaySlip</h1>
-        <p class="text-inksoft mt-3">Pick a desk to get started.</p>
+        <p class="text-inksoft mt-3">Pick an operation desk to get started.</p>
     </div>
 
-    <!-- Two option cards -->
-    <div class="grid sm:grid-cols-2 gap-8 sm:gap-10">
+    <!-- Three option cards -->
+    <div class="grid sm:grid-cols-3 gap-6 sm:gap-8">
 
-        <!-- Payslip option -->
+        <!-- Desk 001: Upload Payroll Excel -->
+        <button type="button" id="btnOpenUpload" class="group block text-left w-full">
+            <div class="tab bg-emerald-800 text-paper text-xs font-mono tracking-widest uppercase px-4 py-2 w-fit mx-auto -mb-1 relative z-10">
+                Desk 001
+            </div>
+            <div class="bg-white border border-line rounded-b-xl rounded-tr-xl shadow-sm group-hover:shadow-md group-hover:-translate-y-0.5 transition-all duration-150 p-6 text-center h-full flex flex-col justify-between">
+                <div>
+                    <div class="text-4xl mb-3">📊</div>
+                    <h2 class="font-display text-xl font-semibold text-ink mb-2">Import Payroll</h2>
+                    <p class="text-xs text-inksoft leading-relaxed mb-4">
+                        Upload this month's master Excel spreadsheet to batch-populate staff payslip data.
+                    </p>
+                </div>
+                <span class="inline-flex items-center justify-center gap-1 text-xs font-medium text-emerald-700 group-hover:gap-2 transition-all">
+                    Upload monthly batch →
+                </span>
+            </div>
+        </button>
+
+        <!-- Desk 002: Payslip Generator -->
         <a href="payslip.php" class="group block">
             <div class="tab bg-ink text-paper text-xs font-mono tracking-widest uppercase px-4 py-2 w-fit mx-auto -mb-1 relative z-10">
-                Form 001
+                Desk 002
             </div>
-            <div class="bg-white border border-line rounded-b-xl rounded-tr-xl shadow-sm group-hover:shadow-md group-hover:-translate-y-0.5 transition-all duration-150 p-8 text-center">
-                <div class="text-5xl mb-4">🧾</div>
-                <h2 class="font-display text-2xl font-semibold text-ink mb-2">Payslip</h2>
-                <p class="text-sm text-inksoft leading-relaxed mb-5">
-                    Look up a staff member, confirm their details, and generate this month's Excel payslip.
-                </p>
-                <span class="inline-flex items-center gap-1 text-sm font-medium text-brass group-hover:gap-2 transition-all">
-                    Open the payslip desk →
+            <div class="bg-white border border-line rounded-b-xl rounded-tr-xl shadow-sm group-hover:shadow-md group-hover:-translate-y-0.5 transition-all duration-150 p-6 text-center h-full flex flex-col justify-between">
+                <div>
+                    <div class="text-4xl mb-3">🧾</div>
+                    <h2 class="font-display text-xl font-semibold text-ink mb-2">Payslip Desk</h2>
+                    <p class="text-xs text-inksoft leading-relaxed mb-4">
+                        Select a salary month, choose a staff member, and preview or download their official payslip.
+                    </p>
+                </div>
+                <span class="inline-flex items-center justify-center gap-1 text-xs font-medium text-brass group-hover:gap-2 transition-all">
+                    Open payslips desk →
                 </span>
             </div>
         </a>
 
-        <!-- Ask AI option -->
+        <!-- Desk 003: Ask AI -->
         <button type="button" id="btnOpenAskAI" class="group block text-left w-full">
             <div class="tab bg-brass text-paper text-xs font-mono tracking-widest uppercase px-4 py-2 w-fit mx-auto -mb-1 relative z-10">
-                Desk 002
+                Desk 003
             </div>
-            <div class="bg-white border border-line rounded-b-xl rounded-tr-xl shadow-sm group-hover:shadow-md group-hover:-translate-y-0.5 transition-all duration-150 p-8 text-center h-full">
-                <div class="text-5xl mb-4">✉️</div>
-                <h2 class="font-display text-2xl font-semibold text-ink mb-2">Ask AI</h2>
-                <p class="text-sm text-inksoft leading-relaxed mb-5">
-                    Describe the email you need — a payroll notice, a reminder, an announcement — and let AI draft it.
-                </p>
-                <span class="inline-flex items-center gap-1 text-sm font-medium text-brass group-hover:gap-2 transition-all">
+            <div class="bg-white border border-line rounded-b-xl rounded-tr-xl shadow-sm group-hover:shadow-md group-hover:-translate-y-0.5 transition-all duration-150 p-6 text-center h-full flex flex-col justify-between">
+                <div>
+                    <div class="text-4xl mb-3">✉️</div>
+                    <h2 class="font-display text-xl font-semibold text-ink mb-2">Ask AI</h2>
+                    <p class="text-xs text-inksoft leading-relaxed mb-4">
+                        Draft staff salary emails, payroll disbursement memos, and notices automatically using AI.
+                    </p>
+                </div>
+                <span class="inline-flex items-center justify-center gap-1 text-xs font-medium text-brass group-hover:gap-2 transition-all">
                     Open the AI desk →
                 </span>
             </div>
@@ -95,7 +118,54 @@
 
     </div>
 
-    <p class="text-center text-xs text-inksoft mt-14 font-mono">Running locally on Laragon · No data leaves this machine</p>
+    <p class="text-center text-xs text-inksoft mt-14 font-mono">Running on MariaDB Server · Persistent Storage</p>
+</div>
+
+<!-- ============ Upload Payroll Excel Modal ============ -->
+<div id="uploadModal" class="hidden fixed inset-0 bg-ink/50 flex items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-xl shadow-lg w-full max-w-lg overflow-hidden">
+
+        <div class="bg-emerald-800 px-6 py-4 flex items-center justify-between">
+            <div>
+                <p class="font-mono text-[10px] tracking-[0.3em] text-emerald-200 uppercase">Desk 001</p>
+                <h2 class="font-display text-lg font-semibold text-paper">Upload Monthly Payroll Excel</h2>
+            </div>
+            <button type="button" onclick="closeModal('uploadModal')" class="text-paper/70 hover:text-paper text-xl leading-none">&times;</button>
+        </div>
+
+        <form id="formUploadPayroll" class="p-6 space-y-4">
+            <div>
+                <label class="block text-xs font-semibold text-ink uppercase tracking-wider mb-1">Salary Month Label</label>
+                <input type="text" id="uploadSalaryMonth" name="salary_month" required
+                       placeholder="e.g. September 2026"
+                       class="w-full border border-line rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-700/50">
+                <p class="text-[11px] text-inksoft mt-1">This label groups the payslips for dropdown retrieval.</p>
+            </div>
+
+            <div>
+                <label class="block text-xs font-semibold text-ink uppercase tracking-wider mb-1">Disbursement / Payment Date</label>
+                <input type="date" id="uploadPaymentDate" name="payment_date" required
+                       class="w-full border border-line rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-700/50">
+            </div>
+
+            <div>
+                <label class="block text-xs font-semibold text-ink uppercase tracking-wider mb-1">Excel File (.xlsx)</label>
+                <input type="file" id="uploadPayrollFile" name="payroll_file" required accept=".xlsx, .xls"
+                       class="w-full border border-line rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-700/50 file:mr-4 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100">
+            </div>
+
+            <div id="uploadFeedback" class="text-sm p-3 rounded-lg hidden"></div>
+
+            <div class="flex justify-end gap-2 pt-2">
+                <button type="button" onclick="closeModal('uploadModal')"
+                        class="px-4 py-2 text-xs font-medium rounded-lg border border-line text-inksoft hover:bg-slate-50">Cancel</button>
+                <button type="submit" id="btnSubmitUpload"
+                        class="px-5 py-2 text-xs font-semibold rounded-lg bg-emerald-800 hover:bg-emerald-900 text-white flex items-center gap-2">
+                    <span id="uploadBtnLabel">Import Data</span>
+                </button>
+            </div>
+        </form>
+    </div>
 </div>
 
 <!-- ============ Ask AI Modal ============ -->
@@ -104,7 +174,7 @@
 
         <div class="bg-ink px-6 py-4 flex items-center justify-between">
             <div>
-                <p class="font-mono text-[10px] tracking-[0.3em] text-brasslt uppercase">Desk 002</p>
+                <p class="font-mono text-[10px] tracking-[0.3em] text-brasslt uppercase">Desk 003</p>
                 <h2 class="font-display text-lg font-semibold text-paper">Ask AI to draft an email</h2>
             </div>
             <button type="button" onclick="closeModal('askAiModal')" class="text-paper/70 hover:text-paper text-xl leading-none">&times;</button>
@@ -112,7 +182,7 @@
 
         <div class="p-6">
             <label class="block text-sm font-medium text-ink mb-1">What do you need?</label>
-            <textarea id="aiPrompt" rows="4" placeholder="e.g. Write a short email to all staff reminding them that November payslips will be issued this Friday."
+            <textarea id="aiPrompt" rows="4" placeholder="e.g. Write a short email to all staff reminding them that September payslips will be issued this Friday."
                       class="w-full border border-line rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brass/50"></textarea>
 
             <button type="button" id="btnGenerateAI"
@@ -141,6 +211,16 @@
 function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
 function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
 
+// --- Modal Triggers ---
+document.getElementById('btnOpenUpload').addEventListener('click', () => {
+    const feedback = document.getElementById('uploadFeedback');
+    feedback.classList.add('hidden');
+    feedback.textContent = '';
+    // Default payment date to today
+    document.getElementById('uploadPaymentDate').value = new Date().toISOString().split('T')[0];
+    openModal('uploadModal');
+});
+
 document.getElementById('btnOpenAskAI').addEventListener('click', () => {
     document.getElementById('aiError').classList.add('hidden');
     document.getElementById('aiResultWrap').classList.add('hidden');
@@ -148,6 +228,50 @@ document.getElementById('btnOpenAskAI').addEventListener('click', () => {
     document.getElementById('aiPrompt').focus();
 });
 
+// --- Handle Excel Upload ---
+document.getElementById('formUploadPayroll').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const form = e.target;
+    const feedback = document.getElementById('uploadFeedback');
+    const submitBtn = document.getElementById('btnSubmitUpload');
+    const btnLabel = document.getElementById('uploadBtnLabel');
+
+    feedback.classList.add('hidden');
+    submitBtn.disabled = true;
+    btnLabel.textContent = 'Importing...';
+
+    const formData = new FormData(form);
+
+    try {
+        const res = await fetch('api/upload_payroll_excel.php', {
+            method: 'POST',
+            body: formData
+        });
+        const data = await res.json();
+
+        feedback.classList.remove('hidden');
+        if (res.ok && data.status === 'success') {
+            feedback.className = 'text-sm p-3 rounded-lg bg-emerald-50 text-emerald-800 border border-emerald-200';
+            feedback.textContent = data.message;
+            form.reset();
+            setTimeout(() => {
+                closeModal('uploadModal');
+            }, 1800);
+        } else {
+            feedback.className = 'text-sm p-3 rounded-lg bg-rose-50 text-rose-800 border border-rose-200';
+            feedback.textContent = data.message || 'Import failed. Check file format.';
+        }
+    } catch (err) {
+        feedback.classList.remove('hidden');
+        feedback.className = 'text-sm p-3 rounded-lg bg-rose-50 text-rose-800 border border-rose-200';
+        feedback.textContent = 'Server communication error. Verify MariaDB is running.';
+    } finally {
+        submitBtn.disabled = false;
+        btnLabel.textContent = 'Import Data';
+    }
+});
+
+// --- Ask AI Logic ---
 async function runAskAI() {
     const prompt = document.getElementById('aiPrompt').value.trim();
     const errorEl = document.getElementById('aiError');
@@ -166,10 +290,14 @@ async function runAskAI() {
         const formData = new FormData();
         formData.append('prompt', prompt);
 
-        // NOTE: api/ask_ai.php is currently a placeholder — the real AI
-        // provider call gets wired in there in the next step.
         const res = await fetch('api/ask_ai.php', { method: 'POST', body: formData });
-        const data = await res.json();
+        const text = await res.text();
+        let data;
+        try {
+            data = JSON.parse(text);
+        } catch (jsonErr) {
+            throw new Error(`Server returned non-JSON response (${res.status}): ${text.substring(0, 150)}`);
+        }
 
         if (data.success) {
             document.getElementById('aiResult').value = data.email;
@@ -179,7 +307,7 @@ async function runAskAI() {
             errorEl.classList.remove('hidden');
         }
     } catch (e) {
-        errorEl.textContent = 'Could not reach the AI service.';
+        errorEl.textContent = e.message;
         errorEl.classList.remove('hidden');
     } finally {
         label.textContent = '✨ Generate Email';
