@@ -1,4 +1,7 @@
 <?php
+require_once __DIR__ . '/../auth.php';
+require_login_api();
+
 // api/save_template_config.php
 // Accepts a JSON body of { field_key: { cell, label, show_label } } and
 // persists it as the new live payslip cell mapping.

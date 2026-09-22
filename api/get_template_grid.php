@@ -1,4 +1,7 @@
 <?php
+require_once __DIR__ . '/../auth.php';
+require_login_api();
+
 // api/get_template_grid.php
 // Returns the current template.xlsx as a JSON grid (cell text previews +
 // merged-cell ranges) plus the live field -> cell/label mapping, so the

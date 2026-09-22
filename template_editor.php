@@ -1,3 +1,7 @@
+<?php
+require_once __DIR__ . '/auth.php';
+require_login_page();
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -88,6 +92,8 @@
 </style>
 </head>
 <body class="min-h-screen font-body text-ink">
+
+<a href="logout.php" class="fixed top-4 right-4 text-xs font-mono text-inksoft hover:text-ink bg-white/70 border border-line rounded-full px-3 py-1.5 z-50">Log Out</a>
 
 <div class="max-w-7xl mx-auto px-4 py-10">
 

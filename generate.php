@@ -38,6 +38,7 @@ ini_set('display_errors', 0);
 error_reporting(E_ALL);
 
 require __DIR__ . '/vendor/autoload.php';
+require __DIR__ . '/template_config.php';
 
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -46,33 +47,12 @@ const TEMPLATE_PATH = __DIR__ . '/template.xlsx';
 const TEMPLATE_SHEET_NAME = null;
 const TEMP_DIR = __DIR__ . '/temp';
 
-const CELL_MAP = [
-    'name'              => 'B4',   // Employee Name
-    'ic_number'         => 'B5',   // NRIC
-    'position'          => 'B6',   // Position
-    'salary_month'      => 'H4',   // Salary Month
-    'payment_date'      => 'H5',   // Payment Date
-    'bank_account'      => 'H6',   // Bank Account No
-    'basic_salary'      => 'F10',  // Basic Salary
-    'epf_employee'      => 'K10',  // EPF (employee)
-    'socso_employee'    => 'K11',  // SOCSO (employee)
-    'socso24_employee'  => 'K12',  // Employee's SOCSO Lindung 24 Jam
-    'epf_employer'      => 'F21',  // EPF (employer)
-    'socso_employer'    => 'F22',  // SOCSO (employer)
-    'eis_employer'      => 'F23',  // EIS (employer)
-    'staff_loan'        => 'K13',  // Staff Loan
-    'overtime'          => 'F11',  // Overtime
-    'others'            => 'F12',  // Others
-];
-
-const CELL_LABELS = [
-    'name'              => 'Employee Name    :',
-    'ic_number'         => 'NRIC             :',
-    'position'          => 'Position         :',
-    'salary_month'      => 'Salary Month    :',
-    'payment_date'      => 'Payment Date    :',
-    'bank_account'      => 'Bank Account No :',
-];
+// Cell mapping + label config is now editable by HR via template_editor.php
+// and stored in the database (payslip_template_fields table). getOptionalPdo()
+// never exits/echoes on failure (unlike db.php), so a DB hiccup can't corrupt
+// the binary file this endpoint streams -- getTemplateConfig() just falls
+// back to the original fixed layout in that case.
+$templateConfig = getTemplateConfig(getOptionalPdo());
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
@@ -156,12 +136,18 @@ if (!$sheet) {
     die('Could not find worksheet in template.');
 }
 
-// Write values to cells
-foreach (CELL_MAP as $field => $cellRef) {
+// Write values to cells, using the HR-configurable mapping loaded above
+// instead of a fixed CELL_MAP/CELL_LABELS pair.
+foreach ($templateConfig as $field => $fieldConfig) {
+    $cellRef = $fieldConfig['cell'] ?? '';
+    if ($cellRef === '') {
+        continue; // field not mapped to any cell -- skip it
+    }
+
     $valueToWrite = $values[$field] ?? '';
 
-    if ($valueToWrite !== '' && isset(CELL_LABELS[$field])) {
-        $valueToWrite = CELL_LABELS[$field] . ' ' . $valueToWrite;
+    if ($valueToWrite !== '' && !empty($fieldConfig['show_label']) && !empty($fieldConfig['label'])) {
+        $valueToWrite = $fieldConfig['label'] . ' ' . $valueToWrite;
     }
 
     $sheet->setCellValue($cellRef, $valueToWrite);

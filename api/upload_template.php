@@ -1,4 +1,7 @@
 <?php
+require_once __DIR__ . '/../auth.php';
+require_login_api();
+
 // api/upload_template.php
 // Lets HR replace the master template.xlsx with a new file. The upload is
 // validated by actually opening it with PhpSpreadsheet before it's allowed
