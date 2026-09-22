@@ -1,4 +1,7 @@
 <?php
+require_once __DIR__ . '/../auth.php';
+require_login_api();
+
 // api/get_employees.php
 header('Content-Type: application/json');
 require_once __DIR__ . '/../db.php';

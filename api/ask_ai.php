@@ -1,4 +1,7 @@
 <?php
+require_once __DIR__ . '/../auth.php';
+require_login_api();
+
 /**
  * api/ask_ai.php
  * ---------------------------------------------------------------

@@ -1,4 +1,7 @@
 <?php
+require_once __DIR__ . '/../auth.php';
+require_login_api();
+
 // api/upload_payroll_excel.php
 header('Content-Type: application/json');
 

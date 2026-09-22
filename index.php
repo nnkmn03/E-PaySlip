@@ -1,3 +1,7 @@
+<?php
+require_once __DIR__ . '/auth.php';
+require_login_page();
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -46,6 +50,8 @@
 </style>
 </head>
 <body class="min-h-screen font-body text-ink">
+
+<a href="logout.php" class="fixed top-4 right-4 text-xs font-mono text-inksoft hover:text-ink bg-white/70 border border-line rounded-full px-3 py-1.5 z-50">Log Out</a>
 
 <div class="max-w-5xl mx-auto px-4 py-14 sm:py-20">
 
@@ -120,12 +126,6 @@
 
     <p class="text-center text-xs text-inksoft mt-14 font-mono">Running on MariaDB Server · Persistent Storage</p>
 </div>
-
-<!-- Update Template (HR-only utility, tucked in the corner rather than a Desk card) -->
-<a href="template_editor.php"
-   class="fixed bottom-5 left-5 inline-flex items-center gap-2 bg-white border border-line rounded-full shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-150 px-4 py-2.5 text-xs font-medium text-inksoft hover:text-ink z-40">
-    ⚙️ Update Template
-</a>
 
 <!-- ============ Upload Payroll Excel Modal ============ -->
 <div id="uploadModal" class="hidden fixed inset-0 bg-ink/50 flex items-center justify-center p-4 z-50">
